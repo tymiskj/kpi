@@ -1,4 +1,4 @@
-import { randomNumberGenerator, consumeWithTimeout, memoize } from 'kpi-async-iterator-lib';
+import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue } from 'kpi-async-iterator-lib';
 
 console.log("=== Демонстрація Task 1: Async Iterator ===\n");
 const myRandomIterator = randomNumberGenerator();
@@ -31,3 +31,21 @@ console.timeEnd("Третій виклик (Обчислення)");
 console.time("Четвертий виклик (Обчислення, витіснить перше значення через LRU)");
 console.log("Результат (30):", memoizedMath(30));
 console.timeEnd("Четвертий виклик (Обчислення, витіснить перше значення через LRU)");
+
+console.log("\n=== Демонстрація Task 4: Priority Queue ===");
+
+const queue = new BiDirectionalPriorityQueue();
+
+queue.enqueue("Завдання А", 1);
+queue.enqueue("Завдання Б", 10);
+queue.enqueue("Завдання В", 5);
+queue.enqueue("Завдання Г", 0);
+
+console.log("Peek 'highest':", queue.peek('highest'));
+console.log("Dequeue 'highest':", queue.dequeue('highest'));
+
+console.log("Dequeue 'lowest':", queue.dequeue('lowest'));
+console.log("Dequeue 'oldest':", queue.dequeue('oldest'));
+console.log("Dequeue 'newest':", queue.dequeue('newest'));
+
+console.log("Peek порожньої черги:", queue.peek('highest'));
