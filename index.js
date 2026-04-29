@@ -3,3 +3,4 @@ export * from './lib/consumer.js';
 export * from './lib/utils.js';
 export * from './lib/memoize.js';
 export * from './lib/queue.js';
+export * from './lib/asyncMap.js';
