@@ -1,4 +1,4 @@
-import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue } from 'kpi-async-iterator-lib';
+import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue, asyncMapCallback, asyncMapPromise } from 'kpi-async-iterator-lib';
 
 console.log("=== Демонстрація Task 1: Async Iterator ===\n");
 const myRandomIterator = randomNumberGenerator();
@@ -49,3 +49,44 @@ console.log("Dequeue 'oldest':", queue.dequeue('oldest'));
 console.log("Dequeue 'newest':", queue.dequeue('newest'));
 
 console.log("Peek порожньої черги:", queue.peek('highest'));
+
+console.log("\n=== Демонстрація Task 5: Async Map Variants ===");
+
+const data = [1, 2, 3];
+
+const multiplyByTwoCallback = (item, cb) => {
+  setTimeout(() => cb(null, item * 2), 50);
+};
+
+await new Promise((resolve) => {
+  asyncMapCallback(data, multiplyByTwoCallback, (err, result) => {
+    if (err) console.error("Callback Error:", err.message);
+    else console.log("1. Callback Map Result:", result);
+    resolve();
+  });
+});
+
+const multiplyByTwoPromise = async (item) => {
+  return new Promise(resolve => setTimeout(() => resolve(item * 2), 50));
+};
+
+try {
+  const result = await asyncMapPromise(data, multiplyByTwoPromise);
+  console.log("2. Promise Map Result:", result);
+} catch (err) {
+  console.error("Promise Error:", err.message);
+}
+
+const controller = new AbortController();
+const slowTask = async (item) => {
+  return new Promise(resolve => setTimeout(() => resolve(item * 10), 500));
+};
+
+setTimeout(() => controller.abort(), 100);
+
+try {
+  await asyncMapPromise(data, slowTask, controller.signal);
+  console.log("Цей текст не має вивестись");
+} catch (err) {
+  console.log("3. AbortController Result: Успішно скасовано ->", err.message);
+}
