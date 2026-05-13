@@ -1,4 +1,4 @@
-import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue, asyncMapCallback, asyncMapPromise } from 'kpi-async-iterator-lib';
+import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue, asyncMapCallback, asyncMapPromise, createLargeDataStream, processDataStream } from 'kpi-async-iterator-lib';
 
 console.log("=== Демонстрація Task 1: Async Iterator ===\n");
 const myRandomIterator = randomNumberGenerator();
@@ -90,3 +90,19 @@ try {
 } catch (err) {
   console.log("3. AbortController Result: Успішно скасовано ->", err.message);
 }
+
+console.log("\n=== Демонстрація Task 6: Large Data Stream ===");
+
+const STREAM_SIZE = 1000000;
+const FILTER_THRESHOLD = 95;
+
+console.log(`Починаємо обробку ${STREAM_SIZE} записів...`);
+
+const dataStream = createLargeDataStream(STREAM_SIZE);
+
+console.time("Час обробки потоку");
+const streamResult = await processDataStream(dataStream, FILTER_THRESHOLD);
+console.timeEnd("Час обробки потоку");
+
+console.log(`Оброблено записів: ${streamResult.processed}`);
+console.log(`Знайдено значень > ${FILTER_THRESHOLD}: ${streamResult.matchCount}`);
