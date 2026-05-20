@@ -1,4 +1,4 @@
-import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue, asyncMapCallback, asyncMapPromise, createLargeDataStream, processDataStream } from 'kpi-async-iterator-lib';
+import { randomNumberGenerator, consumeWithTimeout, memoize, BiDirectionalPriorityQueue, asyncMapCallback, asyncMapPromise, createLargeDataStream, processDataStream, ReactiveEmitter } from 'kpi-async-iterator-lib';
 
 console.log("=== Демонстрація Task 1: Async Iterator ===\n");
 const myRandomIterator = randomNumberGenerator();
@@ -106,3 +106,24 @@ console.timeEnd("Час обробки потоку");
 
 console.log(`Оброблено записів: ${streamResult.processed}`);
 console.log(`Знайдено значень > ${FILTER_THRESHOLD}: ${streamResult.matchCount}`);
+
+console.log("\n=== Демонстрація Task 7: Reactive Communication ===");
+
+const systemEvents = new ReactiveEmitter();
+
+const unsubscribeLogger = systemEvents.subscribe('user_action', (data) => {
+  console.log(`[Logger Entity]: Збережено в лог дію -> ${data.action}`);
+});
+
+const unsubscribeAnalytics = systemEvents.subscribe('user_action', (data) => {
+  console.log(`[Analytics Entity]: Оновлено графік активності. Користувач: ${data.user}`);
+});
+
+console.log("-> Еміт події 1 (Обидва слухають):");
+systemEvents.emit('user_action', { user: 'Timothy', action: 'login' });
+
+unsubscribeAnalytics();
+console.log("\n-> Аналітика відписалася (unsubscribe).");
+
+console.log("-> Еміт події 2 (Слухає лише логер):");
+systemEvents.emit('user_action', { user: 'Timothy', action: 'click_button' });
