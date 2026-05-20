@@ -5,3 +5,4 @@ export * from './lib/memoize.js';
 export * from './lib/queue.js';
 export * from './lib/asyncMap.js';
 export * from './lib/streamer.js';
+export * from './lib/reactive.js';
